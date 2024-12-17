@@ -45,20 +45,22 @@ def default_data():
         'Type 1 Attendances': [0] * 12,
         'Type 3 Attendances': [0] * 12,
         'Type 3 % Not Breaching': [100] * 12,
+        'Type 1 Breaches': [0] * 12,  # Placeholder for calculated column
     })
 
-data = st.data_editor(default_data(), num_rows="dynamic")
+data = default_data()
+data = st.data_editor(data, num_rows="dynamic")
 
 # Validate inputs
-if any(data[["Type 1 Attendances", "Type 3 Attendances", "Type 3 % Not Breaching"]].isnull().sum() > 0):
+if any(data["Type 1 Attendances"].isnull()) or any(data["Type 3 Attendances"].isnull()) or any(data["Type 3 % Not Breaching"].isnull()):
     st.error("Please ensure all columns have valid values.")
 else:
-    # Calculate Type 1 breaches
+    # Calculate Type 1 breaches dynamically
     data['Type 1 Breaches'] = calculate_type1_breaches(data, overall_breach_target)
 
-    # Display the table with results
+    # Display the updated table with results
     st.subheader("Results")
-    st.dataframe(data)
+    st.data_editor(data, disabled=["Month"], num_rows="dynamic")
 
     # Display summary
     st.write("### Summary")
