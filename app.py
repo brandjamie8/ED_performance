@@ -1,77 +1,65 @@
 import streamlit as st
 import pandas as pd
-import datetime as dt
+import numpy as np
 
-# Helper Function to calculate breaches for Type 1 ED
-def calculate_type1_breaches(df, overall_target):
+def calculate_type1_breaches(df, target_percent):
     """
-    Calculates the number of breaches for Type 1 to meet the overall target.
-    Breaches are calculated using the formula:
-    Overall Breach % = (Type1 Breaches + Type3 Breaches) / Total Attendances
+    Calculates the number of breaches for Type 1 ED to meet the overall breach target.
     """
     results = []
     for _, row in df.iterrows():
-        type3_attendances = row['Type 3 Attendances']
-        type3_non_breaching_percent = row['Type 3 % Not Breaching'] / 100
-        total_attendances = row['Type 1 Attendances'] + type3_attendances
+        total_attendances = row['Type 1 Attendances'] + row['Type 3 Attendances']
+        type3_breaches = row['Type 3 Attendances'] * (1 - (row['Type 3 Compliance %'] / 100))
         
-        # Calculate Type 3 breaches
-        type3_breaches = type3_attendances * (1 - type3_non_breaching_percent)
+        # Breaches needed for overall compliance
+        required_breaches = total_attendances * (1 - (target_percent / 100))
+        type1_breaches = required_breaches - type3_breaches
         
-        # Calculate Type 1 breaches needed to meet overall target
-        target_breaches = total_attendances * (overall_target / 100)
-        type1_breaches = max(0, target_breaches - type3_breaches)  # Breaches cannot be negative
-        
+        # Ensure non-negative breaches
+        type1_breaches = max(0, type1_breaches)
         results.append(type1_breaches)
-    
     return results
 
-# Streamlit App
-st.title("ED Attendances and Breaches Calculator")
-
-# Define the months for the next financial year (April 2025 - March 2026)
-start_date = dt.date(2025, 4, 1)
-months = [(start_date + dt.timedelta(days=30 * i)).strftime("%B %Y") for i in range(12)]
-
-# User input for overall target breach percentage
-st.sidebar.header("Target Settings")
-overall_breach_target = st.sidebar.number_input("Overall Breach Target %", min_value=0.0, max_value=100.0, value=5.0, step=0.1)
-
-# Table Input - User to enter monthly data
-st.header("Enter Monthly Attendances and Breach Rates")
-def default_data():
-    return pd.DataFrame({
+def main():
+    st.title("ED Breach Calculator")
+    st.write("Calculate the required breaches for Type 1 ED to meet your overall compliance target.")
+    
+    # Set months from April 2025
+    months = pd.date_range(start="2025-04-01", periods=12, freq='MS').strftime('%B %Y')
+    
+    # User Input Table
+    st.subheader("Input Data")
+    st.write("Enter the monthly attendance and compliance details.")
+    
+    input_data = pd.DataFrame({
         'Month': months,
         'Type 1 Attendances': [0] * 12,
         'Type 3 Attendances': [0] * 12,
-        'Type 3 % Not Breaching': [100] * 12,
-        'Type 1 Breaches': [0] * 12,  # Placeholder for calculated column
+        'Type 3 Compliance %': [0] * 12,
     })
 
-data = default_data()
-data = st.data_editor(data, num_rows="dynamic")
-
-# Validate inputs
-if any(data["Type 1 Attendances"].isnull()) or any(data["Type 3 Attendances"].isnull()) or any(data["Type 3 % Not Breaching"].isnull()):
-    st.error("Please ensure all columns have valid values.")
-else:
-    # Calculate Type 1 breaches dynamically
-    data['Type 1 Breaches'] = calculate_type1_breaches(data, overall_breach_target)
-
-    # Display the updated table with results
-    st.subheader("Results")
-    st.data_editor(data, disabled=["Month"], num_rows="dynamic")
-
-    # Display summary
-    st.write("### Summary")
-    total_type1_breaches = data['Type 1 Breaches'].sum()
-    total_attendances = data['Type 1 Attendances'].sum() + data['Type 3 Attendances'].sum()
-    achieved_percentage = (total_type1_breaches / total_attendances) * 100 if total_attendances else 0
+    edited_df = st.data_editor(input_data, num_rows="dynamic")
     
-    st.write(f"**Total Type 1 Breaches:** {total_type1_breaches:.0f}")
-    st.write(f"**Total Attendances:** {total_attendances:.0f}")
-    st.write(f"**Achieved Breach %:** {achieved_percentage:.2f}%")
+    # Overall compliance target input
+    target_percent = st.number_input(
+        "Enter the overall compliance target (%)", min_value=0.0, max_value=100.0, value=95.0, step=0.1
+    )
+    
+    # Calculate breaches
+    if st.button("Calculate Breaches"):
+        if edited_df.empty:
+            st.error("Please fill in the input table before calculating.")
+        else:
+            edited_df['Type 1 Breaches Required'] = calculate_type1_breaches(edited_df, target_percent)
+            st.subheader("Results")
+            st.dataframe(edited_df)
 
-    # Plot results
-    st.subheader("Breach Breakdown")
-    st.bar_chart(data[['Month', 'Type 1 Breaches']].set_index('Month'))
+            st.download_button(
+                label="Download Results as CSV",
+                data=edited_df.to_csv(index=False),
+                file_name="breach_results.csv",
+                mime='text/csv'
+            )
+
+if __name__ == "__main__":
+    main()
