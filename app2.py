@@ -80,13 +80,27 @@ if uploaded_file:
             _, col1, _ = st.columns([1,5,1])
             with col1:
                 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-                ax1.bar(calculated_data['Date'], calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], label="Attendances Minus Breaches", color='skyblue')
-                ax1.bar(calculated_data['Date'], calculated_data['Required Type 1 Breaches'], bottom=calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], label="Breaches", color='salmon')
+                
+                # Type 1 bar chart with wider bars
+                bar_width = 0.6  # Adjust this to change the bar width
+                ax1.bar(calculated_data['Date'], 
+                        calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], 
+                        width=bar_width, label="Attendances Minus Breaches", color='skyblue')
+                ax1.bar(calculated_data['Date'], 
+                        calculated_data['Required Type 1 Breaches'], 
+                        width=bar_width, bottom=calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], 
+                        label="Breaches", color='salmon')
                 ax1.set_title("Type 1")
                 ax1.legend()
-
-                ax2.bar(calculated_data['Date'], calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], label="Attendances Minus Breaches", color='skyblue')
-                ax2.bar(calculated_data['Date'], calculated_data['Projected Type 3 Breaches'], bottom=calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], label="Breaches", color='salmon')
+            
+                # Type 3 bar chart with wider bars
+                ax2.bar(calculated_data['Date'], 
+                        calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], 
+                        width=bar_width, label="Attendances Minus Breaches", color='skyblue')
+                ax2.bar(calculated_data['Date'], 
+                        calculated_data['Projected Type 3 Breaches'], 
+                        width=bar_width, bottom=calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], 
+                        label="Breaches", color='salmon')
                 ax2.set_title("Type 3")
                 ax2.legend()
                 st.pyplot(fig)
