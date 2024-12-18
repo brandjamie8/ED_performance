@@ -29,14 +29,15 @@ if uploaded_file:
     ed_data['Type 3 Performance'] = 100 * (1 - ed_data['Type 3 Breaches'] / ed_data['Type 3 Attendances'])
 
     st.subheader("Historic Performance")
-    fig, ax = plt.subplots(figsize=(8, 4))
-    ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall", marker="o")
-    ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1", marker="o")
-    ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3", marker="o")
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Performance (%)")
-    ax.legend()
-    st.pyplot(fig)
+    with st.container():
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall", marker="o")
+        ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1", marker="o")
+        ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3", marker="o")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Performance (%)")
+        ax.legend()
+        st.pyplot(fig)
 
     # Input performance targets
     st.markdown("**Enter Target Percentages:**")
@@ -57,38 +58,32 @@ if uploaded_file:
         calculated_data = calculate_breaches(ed_data, type3_performance, start_performance, end_performance)
         st.subheader("Performance Projections")
 
-        # Plot projected performance
-        fig, ax = plt.subplots(figsize=(8, 4))
-        ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
-        ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
-        ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
-        ax.plot(calculated_data['Date'], 100 * (1 - calculated_data['Projected Type 3 Breaches'] / calculated_data['Type 3 Attendances']), label="Type 3 (Projected)", linestyle='dotted')
-        ax.plot(calculated_data['Date'], 100 * (1 - calculated_data['Required Type 1 Breaches'] / calculated_data['Type 1 Attendances']), label="Type 1 (Projected)", linestyle='dotted')
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Performance (%)")
-        ax.legend()
-        st.pyplot(fig)
+        with st.container():
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
+            ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
+            ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
+            ax.plot(calculated_data['Date'], 100 * (1 - calculated_data['Projected Type 3 Breaches'] / calculated_data['Type 3 Attendances']), label="Type 3 (Projected)", linestyle='dotted')
+            ax.plot(calculated_data['Date'], 100 * (1 - calculated_data['Required Type 1 Breaches'] / calculated_data['Type 1 Attendances']), label="Type 1 (Projected)", linestyle='dotted')
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Performance (%)")
+            ax.legend()
+            st.pyplot(fig)
 
         # Stacked bar charts
         st.subheader("Attendances vs Breaches")
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-        ax1.bar(calculated_data['Date'], calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], label="Attendances Minus Breaches", color='skyblue')
-        ax1.bar(calculated_data['Date'], calculated_data['Required Type 1 Breaches'], bottom=calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], label="Breaches", color='salmon')
-        ax1.set_title("Type 1")
-        ax1.legend()
+        with st.container():
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+            ax1.bar(calculated_data['Date'], calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], label="Attendances Minus Breaches", color='skyblue')
+            ax1.bar(calculated_data['Date'], calculated_data['Required Type 1 Breaches'], bottom=calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], label="Breaches", color='salmon')
+            ax1.set_title("Type 1")
+            ax1.legend()
 
-        ax2.bar(calculated_data['Date'], calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], label="Attendances Minus Breaches", color='skyblue')
-        ax2.bar(calculated_data['Date'], calculated_data['Projected Type 3 Breaches'], bottom=calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], label="Breaches", color='salmon')
-        ax2.set_title("Type 3")
-        ax2.legend()
-        st.pyplot(fig)
-
-        # Show data tables
-        st.markdown("### Type 1 Monthly Data")
-        st.dataframe(calculated_data[['Date', 'Type 1 Attendances', 'Required Type 1 Breaches', 'Type 1 Performance']].rename(columns={"Type 1 Attendances": "Projected Attendances", "Required Type 1 Breaches": "Projected Breaches", "Type 1 Performance": "Projected Performance"}))
-
-        st.markdown("### Type 3 Monthly Data")
-        st.dataframe(calculated_data[['Date', 'Type 3 Attendances', 'Projected Type 3 Breaches', 'Type 3 Performance']].rename(columns={"Type 3 Attendances": "Projected Attendances", "Projected Type 3 Breaches": "Projected Breaches", "Type 3 Performance": "Projected Performance"}))
+            ax2.bar(calculated_data['Date'], calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], label="Attendances Minus Breaches", color='skyblue')
+            ax2.bar(calculated_data['Date'], calculated_data['Projected Type 3 Breaches'], bottom=calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], label="Breaches", color='salmon')
+            ax2.set_title("Type 3")
+            ax2.legend()
+            st.pyplot(fig)
 
         # Export data
         csv = calculated_data.to_csv(index=False).encode('utf-8')
