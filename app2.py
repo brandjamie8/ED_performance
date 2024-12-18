@@ -105,6 +105,14 @@ if uploaded_file:
                 ax2.legend()
                 st.pyplot(fig)
 
+            _, col1, col2, _ = st.columns([1,3,3,1])
+            with col1:
+                st.markdown("### Type 1 Monthly Data")
+                st.dataframe(calculated_data[['Date', 'Type 1 Attendances', 'Required Type 1 Breaches', 'Type 1 Performance']].rename(columns={"Type 1 Attendances": "Projected Attendances", "Required Type 1 Breaches": "Projected Breaches", "Type 1 Performance": "Projected Performance"}))
+            with col2:
+                st.markdown("### Type 3 Monthly Data")
+                st.dataframe(calculated_data[['Date', 'Type 3 Attendances', 'Projected Type 3 Breaches', 'Type 3 Performance']].rename(columns={"Type 3 Attendances": "Projected Attendances", "Projected Type 3 Breaches": "Projected Breaches", "Type 3 Performance": "Projected Performance"}))
+        
         # Export data
         csv = calculated_data.to_csv(index=False).encode('utf-8')
         st.download_button(label="Download Trajectory Data", data=csv, file_name='calculated_ed_trajectory.csv', mime='text/csv')
