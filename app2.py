@@ -85,7 +85,7 @@ if uploaded_file:
                 bar_width = 10  # Adjust this to change the bar width
                 ax1.bar(calculated_data['Date'], 
                         calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], 
-                        width=bar_width, label="Attendances Minus Breaches", color='skyblue')
+                        width=bar_width, label="Within Target", color='skyblue')
                 ax1.bar(calculated_data['Date'], 
                         calculated_data['Required Type 1 Breaches'], 
                         width=bar_width, bottom=calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], 
@@ -96,7 +96,7 @@ if uploaded_file:
                 # Type 3 bar chart with wider bars
                 ax2.bar(calculated_data['Date'], 
                         calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], 
-                        width=bar_width, label="Attendances Minus Breaches", color='skyblue')
+                        width=bar_width, label="Within Target", color='skyblue')
                 ax2.bar(calculated_data['Date'], 
                         calculated_data['Projected Type 3 Breaches'], 
                         width=bar_width, bottom=calculated_data['Type 3 Attendances'] - calculated_data['Projected Type 3 Breaches'], 
