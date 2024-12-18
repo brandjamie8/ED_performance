@@ -23,7 +23,7 @@ The app will generate:
 uploaded_file = st.file_uploader("Upload ED Attendance Data (CSV)", type=["csv"])
 if uploaded_file:
     ed_data = pd.read_csv(uploaded_file, parse_dates=['Date'], dayfirst=True)
-    st.dataframe(ed_data.head())
+    st.dataframe(ed_data)
     
     ed_data['Overall Performance'] = 100 * (1 - (ed_data['Type 1 Breaches'] + ed_data['Type 3 Breaches']) / (ed_data['Type 1 Attendances'] + ed_data['Type 3 Attendances']))
     ed_data['Type 1 Performance'] = 100 * (1 - ed_data['Type 1 Breaches'] / ed_data['Type 1 Attendances'])
