@@ -50,11 +50,10 @@ if uploaded_file:
 
     def calculate_breaches(data, type3_perf, start_perf, end_perf):
         future_data = data[data['Date'] >= dt.datetime(2025, 4, 1)].copy()
+        monthly_performance = np.linspace(start_perf, end_perf, len(future_data))
+        future_data['Type 1 Performance'] = monthly_performance
         future_data['Projected Type 3 Breaches'] = (future_data['Type 3 Attendances'] * (1 - type3_perf / 100)).round()
-        future_data['Required Type 1 Breaches'] = ((future_data['Type 1 Attendances'] + future_data['Type 3 Attendances']) *
-                                                  (1 - np.linspace(start_perf, end_perf, len(future_data)) / 100) - 
-                                                  future_data['Projected Type 3 Breaches']).clip(lower=0).round()
-        future_data['Type 1 Performance'] = 100 * (1 - future_data['Required Type 1 Breaches'] / future_data['Type 1 Attendances'])
+        future_data['Required Type 1 Breaches'] = (future_data['Type 1 Attendances'] * (1 - monthly_performance / 100)).round()
         future_data['Type 3 Performance'] = np.full(len(future_data), type3_perf)
         return future_data
 
@@ -65,16 +64,16 @@ if uploaded_file:
         with st.container():
             _, col1, _ = st.columns([1,5,1])
             with col1:
-                fig, ax = plt.subplots(figsize=(8, 4))
-                ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
-                ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
-                ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
-                ax.plot(calculated_data['Date'], 100 * (1 - calculated_data['Projected Type 3 Breaches'] / calculated_data['Type 3 Attendances']), label="Type 3 (Projected)", linestyle='dotted')
-                ax.plot(calculated_data['Date'], 100 * (1 - calculated_data['Required Type 1 Breaches'] / calculated_data['Type 1 Attendances']), label="Type 1 (Projected)", linestyle='dotted')
-                ax.set_xlabel("Date")
-                ax.set_ylabel("Performance (%)")
-                ax.legend()
-                st.pyplot(fig)
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
+            ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
+            ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
+            ax.plot(calculated_data['Date'], calculated_data['Type 3 Performance'], label="Type 3 (Projected)", linestyle='dotted')
+            ax.plot(calculated_data['Date'], calculated_data['Type 1 Performance'], label="Type 1 (Projected)", linestyle='dotted')
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Performance (%)")
+            ax.legend()
+            st.pyplot(fig)
 
         # Stacked bar charts
         st.subheader("Attendances vs Breaches")
