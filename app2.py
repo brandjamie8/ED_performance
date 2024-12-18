@@ -55,6 +55,7 @@ if uploaded_file:
         future_data['Projected Type 3 Breaches'] = (future_data['Type 3 Attendances'] * (1 - type3_perf / 100)).round()
         future_data['Required Type 1 Breaches'] = (future_data['Type 1 Attendances'] * (1 - monthly_performance / 100)).round()
         future_data['Type 3 Performance'] = np.full(len(future_data), type3_perf)
+        future_data['Overall Performance'] = 100 * (1 - (future_data['Required Type 1 Breaches'] + future_data['Projected Type 3 Breaches']) / (future_data['Type 1 Attendances'] + future_data['Type 3 Attendances']))
         return future_data
 
     if st.button("Calculate Performance Trajectory"):
@@ -65,11 +66,12 @@ if uploaded_file:
             _, col1, _ = st.columns([1,5,1])
             with col1:
                 fig, ax = plt.subplots(figsize=(8, 4))
-                ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
-                ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
-                ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
-                ax.plot(calculated_data['Date'], calculated_data['Type 3 Performance'], label="Type 3 (Projected)", linestyle='dotted')
-                ax.plot(calculated_data['Date'], calculated_data['Type 1 Performance'], label="Type 1 (Projected)", linestyle='dotted')
+                ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o", color='blue')
+                ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o", color='orange')
+                ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o", color='green')
+                ax.plot(calculated_data['Date'], calculated_data['Overall Performance'], label="Overall (Projected)", linestyle='dotted', color='blue')
+                ax.plot(calculated_data['Date'], calculated_data['Type 1 Performance'], label="Type 1 (Projected)", linestyle='dotted', color='orange')
+                ax.plot(calculated_data['Date'], calculated_data['Type 3 Performance'], label="Type 3 (Projected)", linestyle='dotted', color='green')
                 ax.set_xlabel("Date")
                 ax.set_ylabel("Performance (%)")
                 ax.legend()
