@@ -33,9 +33,9 @@ if uploaded_file:
         _, col1, _ = st.columns([1,5,1])
         with col1:
             fig, ax = plt.subplots(figsize=(8, 4))
-            ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall", marker="o")
-            ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1", marker="o")
-            ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3", marker="o")
+            ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall", marker="o", color='blue')
+            ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1", marker="o", color='orange')
+            ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3", marker="o", color='green')
             ax.set_xlabel("Date")
             ax.set_ylabel("Performance (%)")
             ax.legend()
