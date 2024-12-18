@@ -10,20 +10,21 @@ st.title("ED Performance Trajectory Calculator")
 
 st.markdown("""
 ### Instructions:
-1. Upload a CSV file with monthly ED attendance data, with dates in dd/mm/yyyy format.
-2. Enter target percentages for overall, Type 1, and Type 3 performances.
-3. Click "Calculate Performance Trajectory" to generate future projections.
-4. Adjust breach reductions as needed.
+1. Upload monthly ED attendance data
+2. Enter target percentages for Type 1, and Type 3 performance
+3. Click "Calculate Performance Trajectory" to generate future breach projections
 
 The app will generate:
 - Historic and projected performance charts
-- Stacked bar charts showing breaches and attendances minus breaches
+- Stacked bar charts showing breaches and attendances within 4 hours
 """)
 
 # Upload data
 uploaded_file = st.file_uploader("Upload ED Attendance Data (CSV)", type=["csv"])
 if uploaded_file:
     ed_data = pd.read_csv(uploaded_file, parse_dates=['Date'], dayfirst=True)
+    st.dataframe(ed_data.head())
+    
     ed_data['Overall Performance'] = 100 * (1 - (ed_data['Type 1 Breaches'] + ed_data['Type 3 Breaches']) / (ed_data['Type 1 Attendances'] + ed_data['Type 3 Attendances']))
     ed_data['Type 1 Performance'] = 100 * (1 - ed_data['Type 1 Breaches'] / ed_data['Type 1 Attendances'])
     ed_data['Type 3 Performance'] = 100 * (1 - ed_data['Type 3 Breaches'] / ed_data['Type 3 Attendances'])
@@ -44,9 +45,9 @@ if uploaded_file:
     # Input performance targets
     st.markdown("**Enter Target Percentages:**")
     col1, col2, col3, col4, col5 = st.columns(5)
-    start_performance = col1.number_input("Start of Year Overall Target (%)", min_value=0.0, max_value=100.0, value=90.0)
-    end_performance = col2.number_input("End of Year Overall Target (%)", min_value=0.0, max_value=100.0, value=95.0)
-    type3_performance = col3.number_input("Type 3 Target (%)", min_value=0.0, max_value=100.0, value=98.0)
+    start_performance = col1.number_input("Start of Year Type 1 Target (%)", min_value=0.0, max_value=100.0, value=75.0)
+    end_performance = col2.number_input("End of Year Type 1 Target (%)", min_value=0.0, max_value=100.0, value=80.0)
+    type3_performance = col3.number_input("Type 3 Target (%)", min_value=0.0, max_value=100.0, value=95.0)
 
     def calculate_breaches(data, type3_perf, start_perf, end_perf):
         future_data = data[data['Date'] >= dt.datetime(2025, 4, 1)].copy()
