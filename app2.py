@@ -54,6 +54,8 @@ if uploaded_file:
         future_data['Required Type 1 Breaches'] = ((future_data['Type 1 Attendances'] + future_data['Type 3 Attendances']) *
                                                   (1 - np.linspace(start_perf, end_perf, len(future_data)) / 100) - 
                                                   future_data['Projected Type 3 Breaches']).clip(lower=0).round()
+        future_data['Type 1 Performance'] = 100 * (1 - future_data['Required Type 1 Breaches'] / future_data['Type 1 Attendances'])
+        future_data['Type 3 Performance'] = np.full(len(future_data), type3_perf)
         return future_data
 
     if st.button("Calculate Performance Trajectory"):
