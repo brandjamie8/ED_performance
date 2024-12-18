@@ -82,7 +82,7 @@ if uploaded_file:
                 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
                 
                 # Type 1 bar chart with wider bars
-                bar_width = 0.6  # Adjust this to change the bar width
+                bar_width = 10  # Adjust this to change the bar width
                 ax1.bar(calculated_data['Date'], 
                         calculated_data['Type 1 Attendances'] - calculated_data['Required Type 1 Breaches'], 
                         width=bar_width, label="Attendances Minus Breaches", color='skyblue')
