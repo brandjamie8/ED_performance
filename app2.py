@@ -64,16 +64,16 @@ if uploaded_file:
         with st.container():
             _, col1, _ = st.columns([1,5,1])
             with col1:
-            fig, ax = plt.subplots(figsize=(8, 4))
-            ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
-            ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
-            ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
-            ax.plot(calculated_data['Date'], calculated_data['Type 3 Performance'], label="Type 3 (Projected)", linestyle='dotted')
-            ax.plot(calculated_data['Date'], calculated_data['Type 1 Performance'], label="Type 1 (Projected)", linestyle='dotted')
-            ax.set_xlabel("Date")
-            ax.set_ylabel("Performance (%)")
-            ax.legend()
-            st.pyplot(fig)
+                fig, ax = plt.subplots(figsize=(8, 4))
+                ax.plot(ed_data['Date'], ed_data['Overall Performance'], label="Overall (Historic)", marker="o")
+                ax.plot(ed_data['Date'], ed_data['Type 1 Performance'], label="Type 1 (Historic)", marker="o")
+                ax.plot(ed_data['Date'], ed_data['Type 3 Performance'], label="Type 3 (Historic)", marker="o")
+                ax.plot(calculated_data['Date'], calculated_data['Type 3 Performance'], label="Type 3 (Projected)", linestyle='dotted')
+                ax.plot(calculated_data['Date'], calculated_data['Type 1 Performance'], label="Type 1 (Projected)", linestyle='dotted')
+                ax.set_xlabel("Date")
+                ax.set_ylabel("Performance (%)")
+                ax.legend()
+                st.pyplot(fig)
 
         # Stacked bar charts
         st.subheader("Attendances vs Breaches")
